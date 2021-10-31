@@ -94,16 +94,33 @@ export const state: CatsStateFactory = () => ({
   cats: [],
 })
 
-interface MutationAddParameters {
-  cats: Cat[]
-  overwrite?: boolean
-}
 export const mutations = {
-  add(state: CatsState, { cats, overwrite }: MutationAddParameters) {
-    state.cats = [...(overwrite ? state.cats : []), ...cats]
+  intialize(state: CatsState, cats: Cat[]) {
+    state.cats = cats
+  },
+  add(state: CatsState, cat: Cat) {
+    state.cats = [...state.cats, cat]
+  },
+  update(state: CatsState, { index, cat }: { index: number; cat: Cat }) {
+    if (index >= 0) {
+      state.cats = [
+        ...state.cats.slice(0, index),
+        cat,
+        ...state.cats.slice(index + 1),
+      ]
+    }
   },
   reset(state: CatsState) {
     state.cats = []
+  },
+  delete(state: CatsState, cat: Cat) {
+    const index = state.cats.indexOf(cat)
+    if (index >= 0) {
+      state.cats = [
+        ...state.cats.slice(0, index),
+        ...state.cats.slice(index + 1),
+      ]
+    }
   },
 }
 
@@ -122,11 +139,7 @@ export const actions = {
     // Mapping des valeurs
     const cats = mapRows(headers, rawCats)
 
-    const mutationArgs: MutationAddParameters = {
-      cats,
-      overwrite: true,
-    }
-    commit('add', mutationArgs)
+    commit('intialize', cats)
   },
 }
 //#endregion
