@@ -1,4 +1,5 @@
 import colors from 'vuetify/es5/util/colors'
+import { fr } from 'vuetify/src/locale'
 
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
@@ -56,6 +57,10 @@ export default {
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
+    lang: {
+      locales: { fr },
+      current: 'fr',
+    },
     customVariables: ['~/assets/variables.scss'],
     theme: {
       light: true,
