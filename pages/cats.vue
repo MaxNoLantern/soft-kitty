@@ -3,15 +3,15 @@
     <v-data-table
       :headers="headers"
       :items="cats"
-      :items-per-page="-1"
+      :items-per-page="15"
       :search="search"
-      class="elevation-1"
+      class="elevation-3"
     >
       <template v-slot:top>
         <v-toolbar flat class="pt-4">
           <v-text-field v-model="search" label="Rechercher"></v-text-field>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="500px">
+          <v-dialog v-model="dialog" max-width="50rem">
             <template v-slot:activator="{ on, attrs }">
               <v-btn color="primary" class="mb-2" v-bind="attrs" v-on="on">
                 Ajouter un chat
@@ -36,11 +36,12 @@
                         v-model="fromDateMenu"
                         :close-on-content-click="false"
                         :nudge-right="40"
+                        transition="scroll-x-transition"
                       >
                         <template v-slot:activator="{ on }">
                           <v-text-field
                             label="Né le"
-                            prepend-icon="mdi-event"
+                            prepend-icon="mdi-calendar"
                             readonly
                             :value="
                               moment(editedItem.birthDate).format(dateFormat)
@@ -60,6 +61,7 @@
                         v-model="editedItem.sex"
                         :items="availlableSexes"
                         label="Sexe"
+                        transition="scroll-x-transition"
                       />
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
