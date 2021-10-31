@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
-import { Mutations } from '../store/cats'
+import { CatsModule } from '../store/cats'
 
 @Component
 export default class extends Vue {
@@ -44,7 +44,14 @@ export default class extends Vue {
       : false
   }
 
-  public importCats() {}
+  public importCats() {
+    const catsModule = new CatsModule(this.$store)
+    catsModule.importCatsFromMatrix(this.fileContent)
+
+    this.$router.push({
+      path: '/cats',
+    })
+  }
 
   /**
    * Valide que le contenu du fichier est cohérent
@@ -119,6 +126,10 @@ export default class extends Vue {
     }
 
     return { result: matrix }
+  }
+
+  public mouted() {
+    this.$store.commit('cats/reset')
   }
 }
 </script>
