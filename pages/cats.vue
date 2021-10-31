@@ -1,13 +1,15 @@
 <template>
   <div>
-    <lazy-cat-form
-      :show="dialog"
-      :editedItem="editedItem"
-      :date-format="dateFormat"
-      @save="save"
-      @cancel="close"
-      @close="close"
-    />
+    <v-dialog v-model="dialog" max-width="50rem">
+      <lazy-cat-form
+        :show="dialog"
+        :editedItem="editedItem"
+        :date-format="dateFormat"
+        @save="save"
+        @cancel="close"
+        @close="close"
+      />
+    </v-dialog>
     <v-data-table
       :headers="headers"
       :items="cats"

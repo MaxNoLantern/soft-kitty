@@ -1,29 +1,43 @@
 <template>
-  <div>
-    <h1>Bonjour !</h1>
-    <blockquote>
-      Pour commencer veuillez ajouter un fichier de données
-    </blockquote>
+  <div class="index-wrapper">
+    <v-card class="index-content pa-4">
+      <h1>Bonjour !</h1>
+      <blockquote>
+        Pour commencer veuillez ajouter un fichier de données
+      </blockquote>
 
-    <v-file-input
-      class="mt-6"
-      label="Fichier de données"
-      accept=".csv"
-      :disabled="loading"
-      :loading="loading"
-      @change="validateFile"
-      :error-messages="validationErrors"
-    ></v-file-input>
+      <v-file-input
+        class="mt-6"
+        label="Fichier de données"
+        accept=".csv"
+        :disabled="loading"
+        :loading="loading"
+        @change="validateFile"
+        :error-messages="validationErrors"
+      ></v-file-input>
 
-    <v-btn
-      color="primary"
-      elevation="2"
-      :disabled="!canImport"
-      @click="importCats"
-      >Importer !</v-btn
-    >
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          color="primary"
+          elevation="2"
+          :disabled="!canImport"
+          @click="importCats"
+          >Importer !</v-btn
+        >
+      </v-card-actions>
+    </v-card>
   </div>
 </template>
+
+<style lang="scss">
+.index-wrapper {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'

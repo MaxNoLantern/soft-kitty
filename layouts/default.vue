@@ -11,6 +11,12 @@
   </v-app>
 </template>
 
+<style lang="scss">
+.container {
+  height: 100%;
+}
+</style>
+
 <script>
 export default {
   data() {
