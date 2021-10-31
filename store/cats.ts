@@ -1,81 +1,19 @@
 import moment from 'moment'
 import { Store } from 'vuex'
+import { Cat } from '~/service/cats.model'
+import { computeHeaders, mapRows } from '~/service/cats.service'
 
 //#region Types
-
-export interface Cat {
-  name: string
-  sex: string
-  birthDate: number
-  race: string
-  price: number
-  comments: string
-}
-
+/**
+ * State du module gérant les chats
+ */
 export interface CatsState {
   cats: Cat[]
 }
 
 type CatsStateFactory = () => CatsState
 
-type Headers = (keyof Cat)[]
-
 //#endregion
-
-//#region Business
-const charToDelete = /["']/g
-
-function computeHeaders(firstRow: string[]) {
-  const headers: Headers = []
-
-  // Nettoyage des noms de colonnes
-  const columnNames = firstRow.map((key) =>
-    key.replace(charToDelete, '').toLowerCase().trim()
-  )
-
-  // Mapping des noms de colonne avec les clés de l'objet Cat
-  for (const columnName of columnNames) {
-    columnsMapping.forEach((value, key) => {
-      if (columnName === key) {
-        headers.push(value)
-      }
-    })
-  }
-
-  return headers
-}
-
-function mapRows(headers: Headers, rows: string[][]) {
-  return rows.map<Cat>(
-    (rawCat) =>
-      Object.fromEntries(
-        headers.map((key, index) =>
-          mapField(key, rawCat[index].replace(charToDelete, ''))
-        )
-      ) as any
-  )
-}
-
-function mapField(key: keyof Cat, value: string): [keyof Cat, unknown] {
-  return [key, specialMapping[key] ? specialMapping[key](value) : value]
-}
-//#endregion
-
-const columnsMapping: Map<string, keyof Cat> = new Map([
-  ['nom', 'name'],
-  ['sexe', 'sex'],
-  ['né le', 'birthDate'],
-  ['race', 'race'],
-  ['prix', 'price'],
-  ['commentaires', 'comments'],
-])
-
-const specialMapping: {
-  [key: string]: (value: string) => unknown
-} = {
-  birthDate: (value) => moment(value).unix() * 1000,
-  price: (value) => parseFloat(value),
-}
 
 //#region Module
 
@@ -85,6 +23,10 @@ const specialMapping: {
 export class CatsModule {
   constructor(private $store: Store<CatsState>) {}
 
+  /**
+   * Importe les données de chat
+   * @param matrix Données à importer
+   */
   importCatsFromMatrix(matrix: string[][]) {
     this.$store.dispatch('cats/importCatsFromMatrix', matrix)
   }
@@ -95,12 +37,27 @@ export const state: CatsStateFactory = () => ({
 })
 
 export const mutations = {
+  /**
+   * Initialize l'application avec une liste de chat
+   * @param state State courant
+   * @param cats Chats à ajouter
+   */
   intialize(state: CatsState, cats: Cat[]) {
     state.cats = cats
   },
+  /**
+   * Ajoute un chat à l'application
+   * @param state State courant
+   * @param cat Chat à ajouter
+   */
   add(state: CatsState, cat: Cat) {
     state.cats = [...state.cats, cat]
   },
+  /**
+   * Met à jour les données d'un chat
+   * @param state State courant
+   * @param payload Index et données du chat à mettre à jour
+   */
   update(state: CatsState, { index, cat }: { index: number; cat: Cat }) {
     if (index >= 0) {
       state.cats = [
@@ -110,9 +67,18 @@ export const mutations = {
       ]
     }
   },
+  /**
+   * Remet à zéro l'état de l'application
+   * @param state State courant
+   */
   reset(state: CatsState) {
     state.cats = []
   },
+  /**
+   * Supprime un chat
+   * @param state State courant
+   * @param cat Chat à supprimer
+   */
   delete(state: CatsState, cat: Cat) {
     const index = state.cats.indexOf(cat)
     if (index >= 0) {
@@ -125,6 +91,12 @@ export const mutations = {
 }
 
 export const actions = {
+  /**
+   * Importe les données de chat
+   * @param param0
+   * @param rawCats
+   * @returns
+   */
   async importCatsFromMatrix(
     { commit }: { commit: (mutation: string, args?: any) => void },
     rawCats: string[][]

@@ -41,25 +41,46 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
-import { CatsModule } from '../store/cats'
-import { validateFileContent } from '../business/cats-file-service'
-import { readFile } from '../utils/file-utils'
+import { CatsModule } from '~/store/cats'
+import { validateFileContent } from '~/service/cats.service'
+import { readFile } from '~/utils/file-utils'
 
+/**
+ * Page principale, propose l'initialisation de données
+ */
 @Component
 export default class extends Vue {
+  //#region Data
+  /**
+   * Erreur suite à la validation
+   */
   private validationErrors: string = ''
+  /**
+   * Vaut vrai si la validation de données est lancé; sinon faux
+   */
   private loading = false
   /**
    * Représentation des données à importer
    */
   private fileContent: string[][] = []
+  //#endregion
 
+  //#region Computed
+  /**
+   * Vaut vrai si on peut importer le fichier; sinon faux
+   */
   public get canImport(): boolean {
     return this.loading || (!this.validationErrors && this.fileContent.length)
       ? true
       : false
   }
+  //#endregion
 
+  //#region Methods
+
+  /**
+   * Import les données des chats dans le systeme
+   */
   public importCats() {
     const catsModule = new CatsModule(this.$store)
     catsModule.importCatsFromMatrix(this.fileContent)
@@ -84,8 +105,13 @@ export default class extends Vue {
     }
   }
 
+  //#endregion
+
+  //#region Lifecycle (terre des lions)
+
   public mouted() {
     this.$store.commit('cats/reset')
   }
+  //#endregion
 }
 </script>

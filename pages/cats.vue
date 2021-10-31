@@ -59,10 +59,14 @@
 import moment from 'moment'
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import { Cat } from '~/store/cats'
+import { Cat, defaultItem } from '~/service/cats.model'
 
 @Component
 export default class extends Vue {
+  //#region Data
+  /**
+   * Entête de colonne de la liste
+   */
   private headers = [
     { text: 'Nom', value: 'name' },
     { text: 'Sexe', value: 'sex' },
@@ -72,30 +76,56 @@ export default class extends Vue {
     { text: 'Commentaires', value: 'comments' },
     { text: 'Actions', value: 'actions', sortable: false },
   ]
+  /**
+   * Format de date utilisé dans l'écran
+   */
   private dateFormat = 'DD/MM/YYYY'
+
+  /**
+   * Champ de recherche
+   */
   private search = ''
+  /**
+   * Index de la ligne édité. Vaut -1 si nouvelle ligne.
+   */
   private editedIndex = -1
+  /**
+   * Valeur de la ligne à éditer
+   */
+  private editedItem: Cat = { ...defaultItem }
+
+  /**
+   * Vaut vrai si la dialogue contenant le formaulaire d'ajout/modification de chat doit être affiché; sinon faux
+   */
   private dialog = false
+  /**
+   * Vaut vrai si la dialogue de confirmation de suppression doit s'afficher; sinon faux
+   */
   private dialogDelete = false
 
-  private defaultItem: Cat = {
-    name: '',
-    sex: '',
-    birthDate: moment().unix() * 1000,
-    race: '',
-    price: 0,
-    comments: '',
-  }
-  private editedItem: Cat = { ...this.defaultItem }
+  //#endregion
 
+  //#region Computed
+  /**
+   * Liste des chats de l'application
+   */
   public get cats() {
     return this.$store.state.cats.cats
   }
+  //#endregion
 
+  //#region Method
+
+  /**
+   * Rendu de la date
+   */
   public renderDate(value: number): string {
     return moment(value).format(this.dateFormat)
   }
 
+  /**
+   * Edition d'un chat
+   */
   public editItem(item: Cat) {
     this.editedIndex = this.cats.indexOf(item)
     this.editedItem = {
@@ -104,32 +134,47 @@ export default class extends Vue {
     this.dialog = true
   }
 
+  /**
+   * Commence le processus de suppression d'un chat
+   */
   public deleteItem(item: Cat) {
     this.editedItem = item
     this.dialogDelete = true
   }
 
+  /**
+   * Confirmation de la supression
+   */
   public deleteItemConfirm() {
     this.$store.commit('cats/delete', this.editedItem)
     this.closeDelete()
   }
 
+  /**
+   * Fermeture de la dialogue d'édition
+   */
   public close() {
     this.dialog = false
     this.$nextTick(() => {
-      this.editedItem = Object.assign({}, this.defaultItem)
+      this.editedItem = { ...defaultItem }
       this.editedIndex = -1
     })
   }
 
+  /**
+   * Fermeture de la dialogue de suppression
+   */
   public closeDelete() {
     this.dialogDelete = false
     this.$nextTick(() => {
-      this.editedItem = { ...this.defaultItem }
+      this.editedItem = { ...defaultItem }
       this.editedIndex = -1
     })
   }
 
+  /**
+   * Sauvegarde du chat en édition
+   */
   public save() {
     if (this.editedIndex > -1) {
       this.$store.commit('cats/update', {
@@ -141,5 +186,6 @@ export default class extends Vue {
     }
     this.close()
   }
+  //#endregion
 }
 </script>

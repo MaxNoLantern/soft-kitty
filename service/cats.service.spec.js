@@ -1,4 +1,4 @@
-import { validateFileContent } from './cats-file-service'
+import { validateFileContent } from './cats.service'
 
 describe('Cats file service', () => {
   test('throw error on empty file', () => {
