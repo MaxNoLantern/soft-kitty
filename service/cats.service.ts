@@ -41,7 +41,30 @@ export function validateFileContent(fileContent: string) {
 }
 
 const charToDelete = /["']/g
+const columnsMapping: Map<string, keyof Cat> = new Map([
+  ['nom', 'name'],
+  ['sexe', 'sex'],
+  ['né le', 'birthDate'],
+  ['race', 'race'],
+  ['prix', 'price'],
+  ['commentaires', 'comments'],
+])
+const specialMapping: {
+  [key: string]: (value: string) => unknown
+} = {
+  birthDate: (value) => moment(value).unix() * 1000,
+  price: (value) => parseFloat(value.replace(',', '.')),
+}
 
+function mapField(key: keyof Cat, value: string): [keyof Cat, unknown] {
+  return [key, specialMapping[key] ? specialMapping[key](value) : value]
+}
+
+/**
+ * Calcul l'ordre des colonnes pour savoir où est chaque donnée
+ * @param firstRow
+ * @returns
+ */
 export function computeHeaders(firstRow: string[]) {
   const headers: Headers = []
 
@@ -62,7 +85,14 @@ export function computeHeaders(firstRow: string[]) {
   return headers
 }
 
+/**
+ * Map les lignes de la matrice en fonction de l'ordre des entêtes
+ * @param headers
+ * @param rows
+ * @returns
+ */
 export function mapRows(headers: Headers, rows: string[][]) {
+  // Pour chaque ligne on créer un objet Chat en parcourant chaque colonne et en la mappant à la bonne donnée
   return rows.map<Cat>(
     (rawCat) =>
       Object.fromEntries(
@@ -71,24 +101,4 @@ export function mapRows(headers: Headers, rows: string[][]) {
         )
       ) as any
   )
-}
-
-function mapField(key: keyof Cat, value: string): [keyof Cat, unknown] {
-  return [key, specialMapping[key] ? specialMapping[key](value) : value]
-}
-
-const columnsMapping: Map<string, keyof Cat> = new Map([
-  ['nom', 'name'],
-  ['sexe', 'sex'],
-  ['né le', 'birthDate'],
-  ['race', 'race'],
-  ['prix', 'price'],
-  ['commentaires', 'comments'],
-])
-
-const specialMapping: {
-  [key: string]: (value: string) => unknown
-} = {
-  birthDate: (value) => moment(value).unix() * 1000,
-  price: (value) => parseFloat(value.replace(',', '.')),
 }
