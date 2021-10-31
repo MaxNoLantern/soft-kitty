@@ -90,5 +90,5 @@ const specialMapping: {
   [key: string]: (value: string) => unknown
 } = {
   birthDate: (value) => moment(value).unix() * 1000,
-  price: (value) => parseFloat(value),
+  price: (value) => parseFloat(value.replace(',', '.')),
 }

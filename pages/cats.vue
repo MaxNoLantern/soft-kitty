@@ -44,6 +44,9 @@
           </v-dialog>
         </v-toolbar>
       </template>
+      <template v-slot:item.price="{ item }">
+        {{ renderPrice(item.price) }}
+      </template>
       <template v-slot:item.birthDate="{ item }">
         {{ renderDate(item.birthDate) }}
       </template>
@@ -121,6 +124,19 @@ export default class extends Vue {
    */
   public renderDate(value: number): string {
     return moment(value).format(this.dateFormat)
+  }
+
+  public renderPrice(value: number): string {
+    let price = value.toString()
+
+    const parts = price.split('.')
+    if (!parts[1] || parts[1].length === 0) {
+      parts.push('00')
+    } else if (parts[1].length === 1) {
+      parts[1] += '0'
+    }
+
+    return parts.join(',')
   }
 
   /**
