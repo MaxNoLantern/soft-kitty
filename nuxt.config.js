@@ -2,6 +2,7 @@ import colors from 'vuetify/es5/util/colors'
 import { fr } from 'vuetify/src/locale'
 
 export default {
+  srcDir: './src',
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
 
@@ -13,27 +14,22 @@ export default {
     titleTemplate: '%s - soft-kitty',
     title: 'soft-kitty',
     htmlAttrs: {
-      lang: 'en'
+      lang: 'fr',
     },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: '' },
-      { name: 'format-detection', content: 'telephone=no' }
+      { name: 'format-detection', content: 'telephone=no' },
     ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [
-    '~/assets/main.scss'
-  ],
+  css: ['~/assets/main.scss'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [
-  ],
+  plugins: [],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -72,7 +68,7 @@ export default {
           info: colors.teal.lighten1,
           warning: colors.amber.base,
           error: colors.deepOrange.accent4,
-          success: colors.green.accent3
+          success: colors.green.accent3,
         },
         light: {
           primary: colors.pink.lighten3,
@@ -81,13 +77,12 @@ export default {
           error: colors.red.darken3,
           info: colors.indigo.lighten1,
           warning: colors.amber.base,
-          success: colors.green.accent3
+          success: colors.green.accent3,
         },
-      }
-    }
+      },
+    },
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {
-  }
+  build: {},
 }
