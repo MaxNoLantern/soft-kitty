@@ -14,7 +14,6 @@
       :headers="headers"
       :items="cats"
       :items-per-page="15"
-      :search="search"
       class="elevation-3"
     >
       <template v-slot:top>
@@ -44,11 +43,8 @@
           </v-dialog>
         </v-toolbar>
       </template>
-      <template v-slot:[`item.price`]="{ item }">
-        {{ renderPrice(item.price) }}
-      </template>
       <template v-slot:[`item.birthDate`]="{ item }">
-        {{ renderDate(item.birthDate) }}
+        {{ item.birthDateString }}
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
@@ -64,6 +60,10 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Cat, defaultItem } from '~/service/cats.model'
 
+interface CatDataTable extends Cat {
+  birthDateString: string
+}
+
 @Component
 export default class extends Vue {
   //#region Data
@@ -73,17 +73,19 @@ export default class extends Vue {
   private headers = [
     { text: 'Nom', value: 'name' },
     { text: 'Sexe', value: 'sex' },
-    { text: 'Né le', value: 'birthDate' },
+    {
+      text: 'Né le',
+      value: 'birthDate',
+    },
     { text: 'Race', value: 'race' },
-    { text: 'Prix (€)', value: 'price' },
+    { text: 'Prix (€)', value: 'priceString', align: 'end' },
     { text: 'Commentaires', value: 'comments' },
-    { text: 'Actions', value: 'actions', sortable: false },
+    { text: 'Actions', value: 'actions', sortable: false, filterable: false },
   ]
   /**
    * Format de date utilisé dans l'écran
    */
   private dateFormat = 'DD/MM/YYYY'
-
   /**
    * Champ de recherche
    */
@@ -112,20 +114,38 @@ export default class extends Vue {
   /**
    * Liste des chats de l'application
    */
-  public get cats() {
-    return this.$store.state.cats.cats
+  public get cats(): CatDataTable[] {
+    return (this.$store.state.cats.cats as Cat[])
+      .map((cat) => ({
+        ...cat,
+        birthDateString: moment(cat.birthDate).format(this.dateFormat),
+        priceString: this.renderPrice(cat.price),
+      }))
+      .filter((cat) => {
+        // On filtre sur des chaine contenant le texte de recherche. Insensible à la casse.
+        const filterRegex = new RegExp(this.search, 'i')
+
+        // Have a break
+        let keepCat = false
+        for (const key of Object.keys(cat) as (keyof Cat)[]) {
+          // On ne filtre pas sur la date et sur le prix brut
+          if (key === 'birthDate' || key === 'price') continue
+
+          keepCat = filterRegex.test(cat[key].toString())
+
+          if (keepCat) break
+        }
+
+        return keepCat
+      })
   }
   //#endregion
 
   //#region Method
 
   /**
-   * Rendu de la date
+   * Affiche correctement le prix d'un chat
    */
-  public renderDate(value: number): string {
-    return moment(value).format(this.dateFormat)
-  }
-
   public renderPrice(value: number): string {
     let price = value.toString()
 
@@ -142,7 +162,7 @@ export default class extends Vue {
   /**
    * Edition d'un chat
    */
-  public editItem(item: Cat) {
+  public editItem(item: CatDataTable) {
     this.editedIndex = this.cats.indexOf(item)
     this.editedItem = {
       ...item,
