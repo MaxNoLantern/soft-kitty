@@ -65,7 +65,7 @@ function mapField(key: keyof Cat, value: string): [keyof Cat, unknown] {
  * @param firstRow
  * @returns
  */
-export function computeHeaders(firstRow: string[]) {
+export function computeHeaders(firstRow: string[]): Headers {
   const headers: Headers = []
 
   // Nettoyage des noms de colonnes
